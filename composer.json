@@ -1,0 +1,20 @@
+{
+  "name": "lit/mcc-mnc",
+  "description": "mcc,mcc,ios国家码 转换",
+  "authors": [
+    {
+      "name": "litong",
+      "email": "ghostong@126.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0"
+  },
+  "minimum-stability": "stable",
+  "autoload": {
+    "files": [],
+    "psr-4": {
+      "Lit\\MccMnc\\": "src"
+    }
+  }
+}
