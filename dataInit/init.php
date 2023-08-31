@@ -1,34 +1,40 @@
 <?php
 
 // 此部分为开发时使用, 使用者无需关注
-// mcc-mnc-com
+// mcc-mnc-net
 
 main();
 
 function main() {
-    $lines = file(__DIR__ . DIRECTORY_SEPARATOR . 'mcc-mnc.dat');
     $mccCountryCodeData = $mccCountryISOData = $mccCountryNameData = $mncNetworkData = [];
-    foreach ($lines as $index => $line) {
-        if ($index > 0) {
-            $data = explode("\t", trim($line));
-            $mccCountryCodeData[$data[0]] = !empty($data[4]) ? $data[4] : "";
-            $mccCountryISOData[$data[0]] = !empty($data[2]) ? $data[2] : "";
-            $mccCountryNameData[$data[0]] = !empty($data[3]) ? $data[3] : "";
-            $mncNetworkData[$data[0] . '_' . $data[1]] = !empty($data[5]) ? $data[5] : "";
-        } else {
-            echo $line;
-        }
-    }
+    expFile($mccCountryCodeData, $mccCountryISOData, $mccCountryNameData, $mncNetworkData);
 
-    mccCountryCode($mccCountryCodeData);
     mccCountryISO($mccCountryISOData);
     mccCountryName($mccCountryNameData);
     mncNetwork($mncNetworkData);
 }
 
-function mccCountryCode($mccCountryCodeData) {
-    $dbFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'db' . DIRECTORY_SEPARATOR . "DbMccCountryCode.php";
-    toFile($mccCountryCodeData, $dbFile);
+function expFile(&$mccCountryCodeData, &$mccCountryISOData, &$mccCountryNameData, &$mncNetworkData) {
+    $fp = fopen(__DIR__ . DIRECTORY_SEPARATOR . 'mcc-mnc.csv', 'r');
+    $index = 0;
+    while (!feof($fp)) {
+        $index++;
+        $data = fgetcsv($fp, 0, ';');
+        if ($index > 1) {
+            $mccCountryISOData[$data[0]] = expValue($data[5]);
+            $mccCountryNameData[$data[0]] = !empty($data[4]) ? "'" . addslashes($data[4]) . "'" : "''";
+            $mncNetworkData[$data[0] . '_' . $data[1]] = !empty($data[6]) ? "'" . addslashes($data[6]) . "'" : "''";
+        } else {
+            var_export($data);
+        }
+    }
+}
+
+function expValue($value) {
+    $expValue = explode('/', $value);
+    $expValue = array_map('strtolower', $expValue);
+    $tmp = var_export($expValue, true);
+    return str_replace("\n", "", $tmp);
 }
 
 function mccCountryISO($mccCountryISOData) {
@@ -59,7 +65,7 @@ function putHeader($file) {
 }
 
 function putContent($file, $key, $value) {
-    file_put_contents($file, '    "' . $key . '" => "' . $value . "\",\n", FILE_APPEND);
+    file_put_contents($file, "    '" . $key . "' => " . $value . ",\n", FILE_APPEND);
 }
 
 function putFooter($file) {
