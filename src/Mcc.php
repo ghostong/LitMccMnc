@@ -22,7 +22,7 @@ class Mcc
      * mcc 转 国家iso简码
      * @date 2023/8/23
      * @param string $mcc
-     * @return string
+     * @return array
      * @author litong
      */
     public static function toCountryISO($mcc) {
