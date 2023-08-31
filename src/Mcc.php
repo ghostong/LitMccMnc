@@ -27,7 +27,7 @@ class Mcc
      */
     public static function toCountryISO($mcc) {
         $data = include(self::DB_DIR . 'DbMccCountryISO.php');
-        return isset($data[$mcc]) ? $data[$mcc] : "";
+        return isset($data[$mcc]) ? $data[$mcc] : [];
     }
 
 }
